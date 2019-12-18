@@ -1,0 +1,10 @@
+2019-12-18 11:35:14.029 7f826180d700 Fatal error: can't check configuration file '/home/ts/project/privoxy-3.0 (copy).28-stable/config':  No such file or directory
+2019-12-18 13:27:12.865 7f8728961700 Fatal error: can't bind to 127.0.0.1:8118: There may be another Privoxy or some other proxy running on port 8118
+2019-12-18 13:39:42.552 7f790c128700 Fatal error: can't bind to 127.0.0.1:8118: There may be another Privoxy or some other proxy running on port 8118
+2019-12-18 13:44:04.740 7fbe9d8d0700 Fatal error: can't load actions file '/home/ts/project/privoxy-3.0.8/./user.action': can't completely parse the action section starting at line (123): {+ block}
+2019-12-18 13:44:40.417 7fcfef66c700 Fatal error: can't load actions file '/home/ts/project/privoxy-3.0.8/./user.action': can't completely parse the action section starting at line (123): {+ block}
+2019-12-18 14:10:29.754 7f8b78998700 Fatal error: can't load actions file '/home/ts/project/privoxy-3.0.8/./default.action': No such file or directory. Note that beginning with Privoxy 3.0.7, actions files have to be specified with their complete file names.
+2019-12-18 14:31:09.397 7fd64f93c700 Fatal error: can't bind to 127.0.0.1:8118: There may be another Privoxy or some other proxy running on port 8118
+2019-12-18 14:31:51.165 7f42398b0700 Fatal error: can't bind to 127.0.0.1:8118: There may be another Privoxy or some other proxy running on port 8118
+2019-12-18 14:32:09.524 7f789286e700 Fatal error: can't bind to 127.0.0.1:8118: There may be another Privoxy or some other proxy running on port 8118
+2019-12-18 14:34:57.012 7f49b571a700 Fatal error: can't bind to 127.0.0.1:8118: There may be another Privoxy or some other proxy running on port 8118
