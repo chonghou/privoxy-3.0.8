@@ -226,7 +226,7 @@ static int match_sockaddr(const struct sockaddr_storage *network,
  * Function    :  block_acl
  *
  * Description :  Block this request?
- *                Decide yes or no based on ACL file.
+ *                Decide yes or no based on ACL(Access Control List) file.  
  *
  * Parameters  :
  *          1  :  dst = The proxy or gateway address this is going to.
@@ -2297,7 +2297,7 @@ char *execute_content_filters(struct client_state *csp)
 void get_url_actions(struct client_state *csp, struct http_request *http)
 {
    struct file_list *fl;
-   struct url_actions *b;
+   struct url_actions *b; //store action files
    int i;
 
    init_current_action(csp->action);

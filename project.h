@@ -672,7 +672,7 @@ struct reusable_connection
    time_t    timestamp; /* XXX: rename? */
 
    time_t    request_sent;
-   time_t    response_received;
+   time_t    response_received; //long int
 
    /*
     * Number of seconds after which this

@@ -486,6 +486,7 @@ static int client_protocol_is_unsupported(const struct client_state *csp, char *
       log_error(LOG_LEVEL_CLF,
          "%s - - [%T] \"%s\" 400 0", csp->ip_addr_str, req);
       freez(req);
+  
       write_socket_delayed(csp->cfd, response, strlen(response),
          get_write_delay(csp));
 
@@ -855,7 +856,7 @@ static void send_crunch_response(const struct client_state *csp, struct http_res
             "Couldn't deliver the error message for %s through client socket %d: %E",
             http->url, csp->cfd);
       }
-
+      
       /* Clean up and return */
       if (cgi_error_memory() != rsp)
       {
@@ -869,7 +870,7 @@ static void send_crunch_response(const struct client_state *csp, struct http_res
  *
  * Function    :  crunch_response_triggered
  *
- * Description :  Checks if the request has to be crunched,
+ * Description :  Checks if the request has to be crunched(必须处理),
  *                and delivers the crunch response if necessary.
  *
  * Parameters  :
@@ -915,6 +916,7 @@ static int crunch_response_triggered(struct client_state *csp, const struct crun
          {
             /* Deliver, log and free the interception response. */
             send_crunch_response(csp, rsp);
+            // fprintf(stderr,"%s\n",rsp->body);
             csp->flags |= CSP_FLAG_CRUNCHED;
 #ifdef FEATURE_STATISTICS
             if (c->flags & CF_COUNT_AS_REJECT)
@@ -1701,6 +1703,7 @@ static jb_err receive_client_request(struct client_state *csp)
    req = get_request_line(csp);
    if (req == NULL)
    {
+      //there are no req, so the csp now can't use
       mark_server_socket_tainted(csp);
       return JB_ERR_PARSE;
    }
@@ -1794,6 +1797,7 @@ static jb_err receive_client_request(struct client_state *csp)
           * header and can finally enlist it.
           */
          enlist(headers, p);
+         // fprintf(stderr,"%s\n",p);
          freez(p);
       }
    }
@@ -1821,8 +1825,11 @@ static jb_err receive_client_request(struct client_state *csp)
 
 #ifdef FEATURE_CLIENT_TAGS
    /* XXX: If the headers were enlisted sooner, passing csp would do. */
-   set_client_address(csp, headers);
+   set_client_address(csp, headers);   //csp->client_address 127.0.0.1
    get_tag_list_for_client(csp->client_tags, csp->client_address);
+
+ 
+
 #endif
 
    /*
@@ -1840,7 +1847,7 @@ static jb_err receive_client_request(struct client_state *csp)
       get_url_actions(csp, http);
    }
 
-   enlist(csp->headers, http->cmd);
+   enlist(csp->headers, http->cmd); //http_request Whole command line: method, URL, Version
 
    /* Append the previously read headers */
    err = list_append_list_unique(csp->headers, headers);
@@ -1960,7 +1967,7 @@ static jb_err parse_client_request(struct client_state *csp)
  *          1  :  csp = Current client state (buffers, headers, etc...)
  *
  * Returns     :  0 on success, anything else is an error.
- *
+ *发送的是http头
  *********************************************************************/
 static int send_http_request(struct client_state *csp)
 {
@@ -1979,6 +1986,7 @@ static int send_http_request(struct client_state *csp)
     * Write the client's (modified) header to the server
     * (along with anything else that may be in the buffer)
     */
+   
    write_failure = 0 != write_socket(csp->server_connection.sfd, hdr, strlen(hdr));
    freez(hdr);
 
@@ -2262,7 +2270,7 @@ static void handle_established_connection(struct client_state *csp)
             mark_server_socket_tainted(csp);
             break; /* "game over, man" */
          }
-
+      
 #ifdef FEATURE_CONNECTION_KEEP_ALIVE
          if (csp->expected_client_content_length != 0)
          {
@@ -2289,7 +2297,9 @@ static void handle_established_connection(struct client_state *csp)
          }
          continue;
       }
-
+      // puts(csp->receive_buffer);
+ 
+      
       /*
        * The server wants to talk. It could be the header or the body.
        * If `hdr' is null, then it's the header otherwise it's the body.
@@ -2394,6 +2404,7 @@ static void handle_established_connection(struct client_state *csp)
           */
          assert(len <= csp->receive_buffer_size);
          csp->receive_buffer[len] = '\0';
+         
 
          /*
           * Normally, this would indicate that we've read
@@ -2796,6 +2807,9 @@ static void handle_established_connection(struct client_state *csp)
       csp->content_length = byte_count;
    }
 
+
+
+   
 #ifdef FEATURE_CONNECTION_KEEP_ALIVE
    if ((csp->flags & CSP_FLAG_CONTENT_LENGTH_SET)
       && (csp->expected_content_length != byte_count))
@@ -2838,7 +2852,7 @@ static void handle_established_connection(struct client_state *csp)
  * Returns     :  Nothing.
  *
  *********************************************************************/
-static void chat(struct client_state *csp)
+static void  chat(struct client_state *csp)
 {
    const struct forward_spec *fwd;
    struct http_request *http;
@@ -2901,7 +2915,7 @@ static void chat(struct client_state *csp)
     *                +--------+--------+
     *
     */
-
+   //http->ssld 对应 https protocol， if is forbidden, then tag the information forbidden to the struct pf csp.
    if (http->ssl && connect_port_is_forbidden(csp))
    {
       const char *acceptable_connect_ports =
@@ -3245,7 +3259,8 @@ static void serve(struct client_state *csp)
       chat(csp);
 
  fprintf( stderr,"*getway_address %s <--outside http ip:%s:%d host:%s \n",
-      csp->ip_addr_str, csp->http[0].host_ip_addr_str,csp->http[0].port,csp->http[0].hostport);
+      csp->ip_addr_str, 
+      csp->http[0].host_ip_addr_str,csp->http[0].port,csp->http[0].hostport);
       
       
       
@@ -3253,6 +3268,7 @@ static void serve(struct client_state *csp)
       /*
        * If the request has been crunched,
        * the calculated latency is zero.
+       * input response= output response
        */
       latency = (unsigned)(csp->server_connection.response_received -
          csp->server_connection.request_sent) / 2;
@@ -3276,7 +3292,7 @@ static void serve(struct client_state *csp)
 
       if (!(csp->flags & CSP_FLAG_CRUNCHED)
          && (csp->server_connection.sfd != JB_INVALID_SOCKET))
-      {
+      { 
          if (!(csp->flags & CSP_FLAG_SERVER_KEEP_ALIVE_TIMEOUT_SET))
          {
             csp->server_connection.keep_alive_timeout = csp->config->default_server_timeout;
@@ -3296,7 +3312,7 @@ static void serve(struct client_state *csp)
                csp->server_connection.keep_alive_timeout);
 #ifdef FEATURE_CONNECTION_SHARING
             if (csp->config->feature_flags & RUNTIME_FEATURE_CONNECTION_SHARING)
-            {
+            { 
                forget_connection(csp->server_connection.sfd);
             }
 #endif /* def FEATURE_CONNECTION_SHARING */
@@ -4418,6 +4434,7 @@ static void listen_loop(void)
       }
 #endif
 
+      //List of client states
       csp_list = zalloc_or_die(sizeof(*csp_list));
       csp = &csp_list->csp;
 
@@ -4509,6 +4526,7 @@ static void listen_loop(void)
       csp_list->next = clients->next;
       clients->next = csp_list;
 
+      //communicate multi_thread
       if (config->multi_threaded)
       {
          int child_id;
@@ -4534,7 +4552,7 @@ static void listen_loop(void)
 //             (void (*)(void *))serve,
 //             64 * 1024,
 //             csp);
-// #endif
+// #endif__const__
 
 // #if defined(__OS2__) && !defined(SELECTED_ONE_OPTION)
 // #define SELECTED_ONE_OPTION
@@ -4657,6 +4675,7 @@ static void listen_loop(void)
       }
       else
       {
+         //single threading
          serve(csp);
       }
    }

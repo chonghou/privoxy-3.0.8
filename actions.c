@@ -736,6 +736,7 @@ void init_action (struct action_spec *dest)
 jb_err merge_current_action (struct current_action_spec *dest,
                              const struct action_spec *src)
 {
+  
    int i;
    jb_err err = JB_ERR_OK;
 

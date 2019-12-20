@@ -123,6 +123,10 @@ static jb_socket no_rfc2553_connect_to(const char *host, int portnum, struct cli
  *
  * Function    :  set_no_delay_flag
  *
+ * Nagle's algorithm is a means of improving the efficiency of TCP/IP networks 
+ * by reducing the number of packets that need to be sent over the network. 
+ * 
+ * 
  * Description :  Disables the Nagle algorithm (TCP send coalescence)
  *                for the given socket.
  *
