@@ -590,6 +590,7 @@ struct configuration_spec * load_config(void)
    global_toggle_state = 1;
 #endif /* def FEATURE_TOGGLE */
 
+   //configuration_spec结构体内存分配
    fs->f = config = zalloc_or_die(sizeof(*config));
 
    /*
@@ -749,7 +750,8 @@ struct configuration_spec * load_config(void)
  * *************************************************************************/
          case hash_admin_address :
             freez(config->admin_address);
-            config->admin_address = strdup_or_die(arg);
+            // config->admin_address = strdup_or_die(arg);
+            config->admin_address = " privoxy-admin@example.com";
             break;
 
 /* *************************************************************************
@@ -769,8 +771,10 @@ struct configuration_spec * load_config(void)
 /* *************************************************************************
  * buffer-limit n
  * *************************************************************************/
+         //过滤的时候内存接受的buff内存大小，默认是4m
          case hash_buffer_limit :
-            config->buffer_limit = (size_t)(1024 * parse_numeric_value(cmd, arg));
+            // config->buffer_limit = (size_t)(1024 * parse_numeric_value(cmd, arg));
+            config->buffer_limit = (size_t)(1024 * 4096);
             break;
 
 /* *************************************************************************

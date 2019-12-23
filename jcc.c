@@ -3715,7 +3715,7 @@ int main(int argc, char **argv)
 
    Argc = argc;
    Argv = argv;
-   configfile="config";
+   // configfile="config";
 //    configfile =
 // #if !defined(_WIN32)
 //    "config"
@@ -3882,29 +3882,30 @@ int main(int argc, char **argv)
 
 #if defined(unix)
 //獲取config文件的絕對路徑
-   if (*configfile != '/')
-   {
-      char cwd[BUFFER_SIZE];
-      char *abs_file;
-      size_t abs_file_size;
+   // if (*configfile != '/')
+   // {
+   //    char cwd[BUFFER_SIZE];
+   //    char *abs_file;
+   //    size_t abs_file_size;
 
-      /* make config-filename absolute here */
-      if (NULL == getcwd(cwd, sizeof(cwd)))
-      {
-         perror("failed to get current working directory");
-         exit(1);
-      }
+   //    /* make config-filename absolute here */
+   //    if (NULL == getcwd(cwd, sizeof(cwd)))
+   //    {
+   //       perror("failed to get current working directory");
+   //       exit(1);
+   //    }
 
-      basedir = strdup_or_die(cwd);
-      /* XXX: why + 5? */
-      abs_file_size = strlen(cwd) + strlen(configfile) + 5;
-      abs_file = malloc_or_die(abs_file_size);
-      strlcpy(abs_file, basedir, abs_file_size);
-      strlcat(abs_file, "/", abs_file_size);
-      strlcat(abs_file, configfile, abs_file_size);
-      configfile = abs_file;
-      debugs(configfile);
-   }
+   //    basedir = strdup_or_die(cwd);
+   //    /* XXX: why + 5? */
+   //    abs_file_size = strlen(cwd) + strlen(configfile) + 5;
+   //    abs_file = malloc_or_die(abs_file_size);
+   //    strlcpy(abs_file, basedir, abs_file_size);
+   //    strlcat(abs_file, "/", abs_file_size);
+   //    strlcat(abs_file, configfile, abs_file_size);
+   //    configfile = abs_file;
+   //    debugs(configfile);
+   // }
+   configfile="/home/ts/project/privoxy-3.0.8/config";
 #endif /* defined unix */
 
 
@@ -4074,6 +4075,7 @@ int main(int argc, char **argv)
 
       chdir("/");
 
+
    } /* -END- if (daemon_mode) */
 
    /*
@@ -4152,6 +4154,9 @@ int main(int argc, char **argv)
 }
 #endif /* defined unix */
 
+      char buff[256];
+      getcwd(buff,256);
+      puts(buff);
 // #ifdef _WIN32
 //    /* This will be FALSE unless the command line specified --service
 //     */
