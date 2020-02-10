@@ -797,7 +797,7 @@ static void log_applied_actions(const struct current_action_spec *actions)
    }
 }
 
-
+static unsigned long long sum_content=0;
 /*********************************************************************
  *
  * Function    :  send_crunch_response
@@ -2385,6 +2385,9 @@ static void handle_established_connection(struct client_state *csp)
             }
          }
          reading_done:
+
+          //count
+         sum_content+=byte_count;
 #endif  /* FEATURE_CONNECTION_KEEP_ALIVE */
 
          /*
@@ -3240,6 +3243,11 @@ static void prepare_csp_for_next_request(struct client_state *csp)
  * Returns     :  N/A
  *
  *********************************************************************/
+static int sum=0;
+static int sum_time=0;
+#include<time.h>//time.h头文件
+static unsigned long long int tmp=0; 
+
 static void serve(struct client_state *csp)
 {
    int config_file_change_detected = 0; /* Only used for debugging */
@@ -3251,17 +3259,32 @@ static void serve(struct client_state *csp)
 
    log_error(LOG_LEVEL_CONNECT, "Accepted connection from %s on socket %d",
       csp->ip_addr_str, csp->cfd);
-  
+	int i, begin, end;//定义开始和结束标志位
+
    do
    {
       unsigned int latency;
       
+      begin=clock();//开始计时
       chat(csp);
+      end=clock();//结束计时 毫秒
 
- fprintf( stderr,"*getway_address %s <--outside http ip:%s:%d host:%s \n",
-      csp->ip_addr_str, 
+sum_time+=end-begin;
+if(sum_content!=tmp){
+
+fprintf(stderr,">%d   %s<-%s:%d host:%s",++sum, csp->ip_addr_str, 
       csp->http[0].host_ip_addr_str,csp->http[0].port,csp->http[0].hostport);
+
+fprintf(stderr," all: 数据量：%llu 当前链接耗时：%d 总耗时：%d 平均速度:%f kb/s\n",sum_content,end-begin,sum_time,(float)(sum_content/(sum_time))*1000/1024);
+// fprintf( stderr,">%d   %s<-%s:%d host:%s all: 数据量：%llu  当前链接耗时：%d 总耗时：%d 平均速度:%f kb/s\n",++sum,
+//       csp->ip_addr_str, 
+//       csp->http[0].host_ip_addr_str,csp->http[0].port,csp->http[0].hostport ,sum_content,end-begin,sum_time,(float)(sum_content/(sum_time))*1000/1024);
       
+      
+      tmp=sum_content;
+          }
+
+
       
       
       

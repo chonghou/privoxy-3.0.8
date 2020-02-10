@@ -1,0 +1,3 @@
+privoxy_stu 里面分析了通过浏览器的数据大小，速率等信息，不过做了修剪不好用了
+
+privoxy-3.8.0 里面不全，需要参考privoxy_stu的jcc.c文件
