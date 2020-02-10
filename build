@@ -1,12 +1,7 @@
 make clean&& make
 ps -ef | grep "privoxy" | grep -v grep | awk '{print $2}'| xargs kill
-
-
 echo "\n\n\n"
 echo "start runing ---------------\n\n"
-
-./privoxy 
-
+./privoxy
 echo "\n\n\nend runing ---------------\n\n\n"
-
 netstat -an|grep 8118
