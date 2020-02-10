@@ -3244,7 +3244,7 @@ static void prepare_csp_for_next_request(struct client_state *csp)
  *
  *********************************************************************/
 static int sum=0;
-static int sum_time=0;
+static int sum_time=1;
 #include<time.h>//time.h头文件
 static unsigned long long int tmp=0; 
 
@@ -3272,15 +3272,16 @@ static void serve(struct client_state *csp)
 sum_time+=end-begin;
 if(sum_content!=tmp){
 
+if( csp->ip_addr_str!=NULL &&  csp->http[0].host_ip_addr_str!=NULL ){
 fprintf(stderr,">%d   %s<-%s:%d host:%s",++sum, csp->ip_addr_str, 
       csp->http[0].host_ip_addr_str,csp->http[0].port,csp->http[0].hostport);
 
 fprintf(stderr," all: 数据量：%llu 当前链接耗时：%d 总耗时：%d 平均速度:%f kb/s\n",sum_content,end-begin,sum_time,(float)(sum_content/(sum_time))*1000/1024);
+
+}
 // fprintf( stderr,">%d   %s<-%s:%d host:%s all: 数据量：%llu  当前链接耗时：%d 总耗时：%d 平均速度:%f kb/s\n",++sum,
 //       csp->ip_addr_str, 
 //       csp->http[0].host_ip_addr_str,csp->http[0].port,csp->http[0].hostport ,sum_content,end-begin,sum_time,(float)(sum_content/(sum_time))*1000/1024);
-      
-      
       tmp=sum_content;
           }
 
